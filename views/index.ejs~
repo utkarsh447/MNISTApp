@@ -1,0 +1,155 @@
+<html>
+	<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript">
+    var canvas, ctx, flag = false,
+        prevX = 0,
+        currX = 0,
+        prevY = 0,
+        currY = 0,
+        dot_flag = false;
+
+    var x = "black",
+        y = 2;
+    
+    function init() {
+        canvas = document.getElementById('can');
+        ctx = canvas.getContext("2d");
+        w = canvas.width;
+        h = canvas.height;
+    
+        canvas.addEventListener("mousemove", function (e) {
+            findxy('move', e)
+        }, false);
+        canvas.addEventListener("mousedown", function (e) {
+            findxy('down', e)
+        }, false);
+        canvas.addEventListener("mouseup", function (e) {
+            findxy('up', e)
+        }, false);
+        canvas.addEventListener("mouseout", function (e) {
+            findxy('out', e)
+        }, false);
+    }
+    
+    
+    function draw() {
+        ctx.beginPath();
+        ctx.moveTo(prevX, prevY);
+        ctx.lineTo(currX, currY);
+        ctx.strokeStyle = x;
+        ctx.lineWidth = y;
+        ctx.stroke();
+        ctx.closePath();
+    }
+    
+    function erase() {
+        //var m = confirm("Want to clear");
+        var m = 1;
+        if (m) {
+            ctx.clearRect(0, 0, w, h);
+            document.getElementById("canvasimg").style.display = "none";
+        }
+    }
+    
+    function save() {
+        document.getElementById("canvasimg").style.border = "2px solid";
+        var dataURL = canvas.toDataURL();
+
+        //console.log(canvas.toDataURL())
+        document.getElementById("canvasimg").src = dataURL;
+        document.getElementById("canvasimg").style.display = "inline";
+        var canvas1 = document.getElementById("canvasimg");
+
+          var ctx = canvas.getContext('2d');
+		  ctx.drawImage(canvas1, 0, 0);
+		  canvas1.style.display = 'none';
+		  var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+		  var data = imageData.data;
+		  console.log(data)
+    }
+    
+    function findxy(res, e) {
+        if (res == 'down') {
+            prevX = currX;
+            prevY = currY;
+            currX = e.clientX - canvas.offsetLeft;
+            currY = e.clientY - canvas.offsetTop;
+    
+            flag = true;
+            dot_flag = true;
+            if (dot_flag) {
+                ctx.beginPath();
+                ctx.fillStyle = x;
+                ctx.fillRect(currX, currY, 2, 2);
+                ctx.closePath();
+                dot_flag = false;
+            }
+        }
+        if (res == 'up' || res == "out") {
+            flag = false;
+        }
+        if (res == 'move') {
+            if (flag) {
+                prevX = currX;
+                prevY = currY;
+                currX = e.clientX - canvas.offsetLeft;
+                currY = e.clientY - canvas.offsetTop;
+                draw();
+            }
+        }
+    }
+    </script>
+    <title>MNIST Recognizer</title>
+
+
+    <body onload="init()">
+    	<h1>MNIST HANDWRITTEN DIGIT RECOGNIZER</h1>
+    	<div>
+	        <canvas id="can" width="400" height="400" style="position:absolute;top:10%;left:10%;border:2px solid;"></canvas>
+	        <img id="canvasimg" style="position:absolute;top:10%;left:52%;" style="display:none;">
+	        <input type="button" value="save" id="btn" size="30" onclick="save()" style="position:absolute;top:55%;left:10%;">
+	        <input type="button" value="clear" id="clr" size="23" onclick="erase()" style="position:absolute;top:55%;left:15%;">
+		</div>
+		
+		<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+		<div>
+	    	<p>
+	    	The Testing Value: 
+	    	<% if(test_value !=-1) { %> <%= test_value %> <% } %>
+	    	</p>
+
+
+		</div>
+
+		<!-- <div id="select_div"><a href="#" id="select_link">Test</a></div> -->
+		<form>
+			<input type="text" name="data" id="data"><br>
+		   	<input type="button" id="enter" value="Enter">
+		     <script type="text/javascript">
+
+		      $('#enter').click(function(){  
+
+		     $.ajax({ 
+		           url: '/ajax',
+		           type: 'POST',
+		           cache: false, 
+		           data: { field1: 1, field2: $('#data').val() }, 
+		           success: function(data){
+		              //alert('Success!')
+		           }
+		           , error: function(jqXHR, textStatus, err){
+		               alert('text status '+textStatus+', err '+err)
+		           }
+		        })
+		     })          
+
+		</script>
+		</form>
+
+    <script async="" src="https://cdn.rawgit.com/eligrey/Blob.js/0cef2746414269b16834878a8abc52eb9d53e6bd/Blob.js"/>
+    <script async="" src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"/>
+    <script async="" src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"/>
+    <script async="" src="https://cdn.rawgit.com/eligrey/FileSaver.js/597b6cd0207ce408a6d34890b5b2826b13450714/demo/demo.js"/>
+
+    </body>
+</html>
